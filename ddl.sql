@@ -1,0 +1,96 @@
+CREATE TABLE Paises (
+    ID INT PRIMARY KEY AUTO_INCREMENT,
+    Nombre VARCHAR(100) NOT NULL
+);
+
+CREATE TABLE Ciudades (
+    ID INT PRIMARY KEY AUTO_INCREMENT,
+    Nombre VARCHAR(100) NOT NULL,
+    PaisID INT,
+    FOREIGN KEY (PaisID) REFERENCES Paises(ID)
+);
+
+CREATE TABLE Marcas (
+    ID INT PRIMARY KEY AUTO_INCREMENT,
+    Nombre VARCHAR(100) NOT NULL
+);
+
+CREATE TABLE Modelos (
+    ID INT PRIMARY KEY AUTO_INCREMENT,
+    Nombre VARCHAR(100) NOT NULL,
+    MarcaID INT,
+    FOREIGN KEY (MarcaID) REFERENCES Marcas(ID)
+);
+
+CREATE TABLE Bicicletas (
+    ID INT PRIMARY KEY AUTO_INCREMENT,
+    ModeloID INT,
+    Precio DECIMAL(10, 2) NOT NULL,
+    Stock INT NOT NULL,
+    FOREIGN KEY (ModeloID) REFERENCES Modelos(ID)
+);
+
+CREATE TABLE Clientes (
+    ID INT PRIMARY KEY AUTO_INCREMENT,
+    Nombre VARCHAR(100) NOT NULL,
+    CorreoElectronico VARCHAR(100) NOT NULL UNIQUE,
+    Telefono VARCHAR(15),
+    CiudadID INT,
+    FOREIGN KEY (CiudadID) REFERENCES Ciudades(ID)
+);
+
+CREATE TABLE Ventas (
+    ID INT PRIMARY KEY AUTO_INCREMENT,
+    Fecha DATE NOT NULL,
+    ClienteID INT,
+    Total DECIMAL(10, 2) NOT NULL,
+    FOREIGN KEY (ClienteID) REFERENCES Clientes(ID)
+);
+
+CREATE TABLE DetallesVentas (
+    ID INT PRIMARY KEY AUTO_INCREMENT,
+    VentaID INT,
+    BicicletaID INT,
+    Cantidad INT NOT NULL,
+    PrecioUnitario DECIMAL(10, 2) NOT NULL,
+    FOREIGN KEY (VentaID) REFERENCES Ventas(ID),
+    FOREIGN KEY (BicicletaID) REFERENCES Bicicletas(ID)
+);
+
+CREATE TABLE Proveedores (
+    ID INT PRIMARY KEY AUTO_INCREMENT,
+    Nombre VARCHAR(100) NOT NULL,
+    Contacto VARCHAR(100) NOT NULL,
+    Telefono VARCHAR(15),
+    CorreoElectronico VARCHAR(100) NOT NULL,
+    CiudadID INT,
+    FOREIGN KEY (CiudadID) REFERENCES Ciudades(ID)
+);
+
+CREATE TABLE Repuestos (
+    ID INT PRIMARY KEY AUTO_INCREMENT,
+    Nombre VARCHAR(100) NOT NULL,
+    Descripcion TEXT,
+    Precio DECIMAL(10, 2) NOT NULL,
+    Stock INT NOT NULL,
+    ProveedorID INT,
+    FOREIGN KEY (ProveedorID) REFERENCES Proveedores(ID)
+);
+
+CREATE TABLE Compras (
+    ID INT PRIMARY KEY AUTO_INCREMENT,
+    Fecha DATE NOT NULL,
+    ProveedorID INT,
+    Total DECIMAL(10, 2) NOT NULL,
+    FOREIGN KEY (ProveedorID) REFERENCES Proveedores(ID)
+);
+
+CREATE TABLE DetallesCompras (
+    ID INT PRIMARY KEY AUTO_INCREMENT,
+    CompraID INT,
+    RepuestoID INT,
+    Cantidad INT NOT NULL,
+    PrecioUnitario DECIMAL(10, 2) NOT NULL,
+    FOREIGN KEY (CompraID) REFERENCES Compras(ID),
+    FOREIGN KEY (RepuestoID) REFERENCES Repuestos(ID)
+);
