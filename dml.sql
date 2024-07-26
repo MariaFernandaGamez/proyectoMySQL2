@@ -1,8 +1,3 @@
-Parece que no puedo realizar análisis de datos avanzados en este momento. Por favor, intenta nuevamente más tarde.
-
-Sin embargo, te puedo proporcionar el código de las declaraciones `INSERT` actualizadas aquí para que puedas ejecutarlas directamente en tu entorno:
-
-
 -- Paises
 INSERT INTO Paises (ID, Nombre) VALUES (1, 'Colombia');
 INSERT INTO Paises (ID, Nombre) VALUES (2, 'Argentina');
