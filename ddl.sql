@@ -35,8 +35,8 @@ CREATE TABLE Clientes (
     Nombre VARCHAR(100) NOT NULL,
     CorreoElectronico VARCHAR(100) NOT NULL UNIQUE,
     Telefono VARCHAR(15),
-    CiudadID INT,
-    FOREIGN KEY (CiudadID) REFERENCES Ciudades(ID)
+    Ciudad VARCHAR(100) NOT NULL,
+    Pais VARCHAR(100) NOT NULL
 );
 
 CREATE TABLE Ventas (
@@ -63,8 +63,8 @@ CREATE TABLE Proveedores (
     Contacto VARCHAR(100) NOT NULL,
     Telefono VARCHAR(15),
     CorreoElectronico VARCHAR(100) NOT NULL,
-    CiudadID INT,
-    FOREIGN KEY (CiudadID) REFERENCES Ciudades(ID)
+    Ciudad VARCHAR(100) NOT NULL,
+    Pais VARCHAR(100) NOT NULL
 );
 
 CREATE TABLE Repuestos (

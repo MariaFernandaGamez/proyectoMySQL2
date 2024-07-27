@@ -101,3 +101,81 @@
 
    DELETE FROM Repuestos
    WHERE ProveedorID = 1;
+
+   -- Insertar una nueva compra
+INSERT INTO Compras (Fecha, ProveedorID, Total)
+VALUES ('2024-07-26', 1, 500.00);
+
+-- Obtener el ID de la compra recién insertada
+SET @MiCompraID = LAST_INSERT_ID();
+
+-- Verificar que el ID se ha obtenido correctamente
+SELECT @MiCompraID;
+
+-- Insertar detalles de la compra utilizando el valor de la variable
+INSERT INTO DetallesCompras (CompraID, RepuestoID, Cantidad, PrecioUnitario)
+VALUES (@MiCompraID, 1, 10, 50.00),
+       (@MiCompraID, 2, 5, 30.00);
+
+
+   --CASO DE USO 5: GESTIÓN DE COMPRAS DE REPUESTOS
+
+1. Registrar una nueva compra
+   INSERT INTO Compras (Fecha, ProveedorID, Total)
+   VALUES ('2024-07-26', 1, 500.00);
+
+   SET @CompraID = LAST_INSERT_ID();
+
+2. Registrar detalles de la compra
+   INSERT INTO DetallesCompras (CompraID, RepuestoID, Cantidad, PrecioUnitario)
+   VALUES (@CompraID, 1, 10, 50.00), (@CompraID, 2, 5, 30.00);
+
+3. Actualizar stock 
+   UPDATE Repuestos
+   SET Stock = Stock + 10
+   WHERE ID = 1;
+
+   UPDATE Repuestos
+   SET Stock = Stock + 5
+   WHERE ID = 2;  
+
+   
+
+
+
+   -- CASO DE USO 11: CONSULTA DE VENTAS POR CIUDAD
+   SELECT Ciudad,SUM(Ventas.Total) AS TotalVentas
+   FROM Ventas
+   JOIN Clientes ON Ventas.ClienteID = Clientes.ID
+   GROUP BY Ciudad
+
+
+   -- CASO DE USO 12: CONSULTA DE PROVEEDORES POR PAIS
+   SELECT p.Nombre AS Proveedor, p.Ciudad AS Ciudad, p.Pais AS Pais
+   FROM Proveedores p
+   ORDER BY p.Pais, p.Nombre;
+
+   
+   --CASO DE USO 13: COMPRAS DE REPUESTO POR PROVEEDOR
+   SELECT Proveedores.Nombre AS Proveedor, SUM(DetallesCompras.Cantidad) AS TotalRepuestosComprados
+   FROM Proveedores
+   JOIN Compras ON Proveedores.ID = Compras.ProveedorID
+   JOIN DetallesCompras ON Compras.ID = DetallesCompras.CompraID
+   GROUP BY Proveedores.Nombre
+
+
+   --CASO DE USO 14: CLIENTES CON VENTAS EN UN RANGO DE FECHAS 
+   SELECT 
+      c.Nombre AS Cliente,
+      c.CorreoElectronico AS Correo,
+      c.Telefono AS Telefono,
+      v.Fecha AS FechaDeVenta,
+      v.Total AS TotalDeVenta
+   FROM Clientes c
+   JOIN Ventas v ON c.ID = v.ClienteID
+   WHERE v.Fecha BETWEEN '2024-01-01' AND '2024-07-10'
+   ORDER BY v.Fecha ASC;
+
+
+
+

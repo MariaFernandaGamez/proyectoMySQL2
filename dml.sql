@@ -78,5 +78,7 @@ INSERT INTO Compras (ID, Fecha, ProveedorID, Total) VALUES (5, '2024-01-05', 5, 
 -- DetallesCompras
 INSERT INTO DetallesCompras (ID, CompraID, RepuestoID, Cantidad, PrecioUnitario) VALUES (1, 1, 1, 50, 50.00);
 INSERT INTO DetallesCompras (ID, CompraID, RepuestoID, Cantidad, PrecioUnitario) VALUES (2, 2, 2, 60, 60.00);
-INSERT INTO DetallesCompras (ID, Compra
+INSERT INTO DetallesCompras (ID, CompraID, RepuestoID, Cantidad, PrecioUnitario) VALUES (3, 3, 3, 70, 70.00);
+INSERT INTO DetallesCompras (ID, CompraID, RepuestoID, Cantidad, PrecioUnitario) VALUES (4, 4, 4, 80, 80.00);
+INSERT INTO DetallesCompras (ID, CompraID, RepuestoID, Cantidad, PrecioUnitario) VALUES (5, 5, 5, 90, 90.00);
 
