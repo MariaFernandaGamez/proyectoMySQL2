@@ -206,4 +206,206 @@ VALUES (@MiCompraID, 1, 10, 50.00),
 
    --CASO DE USO 2: REGISTRO DE NUEVA VENTA
 
+1. Creación del procedimiento 
+   DELIMITER &&
+   CREATE PROCEDURE RegistrarVenta(
+      IN p_Fecha DATE,
+      IN p_ClienteID INT,
+      IN p_Total DECIMAL(10, 2),
+      IN p_BicicletaID INT,
+      IN p_Cantidad INT,
+      IN p_PrecioUnitario DECIMAL(10, 2)
+   )
+   BEGIN
+      DECLARE v_VentaID INT;
 
+      INSERT INTO Ventas (Fecha, ClienteID, Total)
+      VALUES (p_Fecha, p_ClienteID, p_Total);
+
+      SET v_VentaID = LAST_INSERT_ID();
+
+      INSERT INTO DetallesVentas (VentaID, BicicletaID, Cantidad, PrecioUnitario)
+      VALUES (v_VentaID, p_BicicletaID, p_Cantidad, p_PrecioUnitario);
+
+      UPDATE Bicicletas
+      SET Stock = Stock - p_Cantidad
+      WHERE ID = p_BicicletaID;
+   END &&
+   DELIMITER ;
+
+2. Uso del procedimiento por el administrador
+   CALL RegistrarVenta('2024-07-26', 1, 1500.00, 1, 3, 500.00);
+
+
+   --CASO DE USO 3: GENERACIÓN DE REPORTE DE VENTAS POR CLIENTE
+
+1. Creación del procedimiento
+   DELIMITER &&
+   CREATE PROCEDURE GenerarReporteVentasPorCliente(
+      IN p_ClienteID INT
+   )
+   BEGIN
+      SELECT 
+         v.ID AS VentaID,
+         v.Fecha AS FechaDeVenta,
+         v.Total AS TotalDeVenta
+      FROM 
+         Ventas v
+      WHERE 
+         v.ClienteID = p_ClienteID;
+
+      SELECT 
+         dv.VentaID,
+         b.Nombre AS Bicicleta,
+         dv.Cantidad,
+         dv.PrecioUnitario,
+         (dv.Cantidad * dv.PrecioUnitario) AS Subtotal
+      FROM 
+         DetallesVentas dv
+      JOIN 
+         Bicicletas b ON dv.BicicletaID = b.ID
+      WHERE 
+         dv.VentaID IN (SELECT ID FROM Ventas WHERE ClienteID = p_ClienteID);
+   END &&
+   DELIMITER ;
+
+2. Uso del procedimiento por el administrador
+   CALL GenerarReporteVentasPorCliente(1);
+
+
+   --CASO DE USO 4: REGISTRO DE COMPRAS DE REPUESTOS
+
+1. Creación del procedimiento
+   DELIMITER //
+   CREATE PROCEDURE RegistrarCompraSimplificado(
+      IN p_Fecha DATE,
+      IN p_ProveedorID INT,
+      IN p_Total DECIMAL(10, 2),
+      IN p_RepuestoID1 INT,
+      IN p_Cantidad1 INT,
+      IN p_PrecioUnitario1 DECIMAL(10, 2),
+      IN p_RepuestoID2 INT,
+      IN p_Cantidad2 INT,
+      IN p_PrecioUnitario2 DECIMAL(10, 2)
+   )
+   BEGIN
+      DECLARE v_CompraID INT;
+
+      -- Insertar la nueva compra
+      INSERT INTO Compras (Fecha, ProveedorID, Total)
+      VALUES (p_Fecha, p_ProveedorID, p_Total);
+
+      -- Obtener el ID de la compra recién insertada
+      SET v_CompraID = LAST_INSERT_ID();
+
+      -- Insertar los detalles de la compra para el primer repuesto
+      INSERT INTO DetallesCompras (CompraID, RepuestoID, Cantidad, PrecioUnitario)
+      VALUES (v_CompraID, p_RepuestoID1, p_Cantidad1, p_PrecioUnitario1);
+
+      -- Actualizar el stock del primer repuesto
+      UPDATE Repuestos
+      SET Stock = Stock + p_Cantidad1
+      WHERE ID = p_RepuestoID1;
+
+      -- Insertar los detalles de la compra para el segundo repuesto
+      INSERT INTO DetallesCompras (CompraID, RepuestoID, Cantidad, PrecioUnitario)
+      VALUES (v_CompraID, p_RepuestoID2, p_Cantidad2, p_PrecioUnitario2);
+
+      -- Actualizar el stock del segundo repuesto
+      UPDATE Repuestos
+      SET Stock = Stock + p_Cantidad2
+      WHERE ID = p_RepuestoID2;
+   END //
+   DELIMITER ;
+
+2. Uso del procedimiento por el administrador
+   CALL RegistrarCompraSimplificado(
+      '2024-07-15', 
+      1, 
+      1500.00, 
+      1, 10, 50.00, 
+      2, 5, 100.00
+   );
+
+
+   --CASO DE USO 5: GENERACIÓN DE REPORTE DE INVENTARIO
+
+1. Creación del procedimiento
+   DELIMITER //
+   CREATE PROCEDURE GenerarReporteInventario()
+   BEGIN
+   
+      SELECT 
+         b.ID AS BicicletaID,
+         m.Nombre AS Modelo,
+         ma.Nombre AS Marca,
+         b.Precio,
+         b.Stock
+      FROM 
+         Bicicletas b
+      JOIN 
+         Modelos m ON b.ModeloID = m.ID
+      JOIN 
+         Marcas ma ON m.MarcaID = ma.ID;
+      SELECT 
+         r.ID AS RepuestoID,
+         r.Nombre,
+         r.Descripcion,
+         r.Precio,
+         r.Stock,
+         p.Nombre AS Proveedor
+      FROM 
+         Repuestos r
+      JOIN 
+         Proveedores p ON r.ProveedorID = p.ID;
+   END //
+   DELIMITER ;
+
+2. Uso del procedimiento por el administrador
+   CALL GenerarReporteInventario();
+
+
+   --CASO DE USO 6: ACTUALIZACIÓN MASIVA DE PRECIOS
+
+1. Creación del procedimiento
+   DELIMITER //
+   CREATE PROCEDURE ActualizarPreciosPorMarca(
+      IN p_MarcaID INT,
+      IN p_PorcentajeIncremento DECIMAL(5, 2)
+   )
+   BEGIN
+   
+      UPDATE Bicicletas b
+      JOIN Modelos m ON b.ModeloID = m.ID
+      SET b.Precio = b.Precio * (1 + p_PorcentajeIncremento / 100)
+      WHERE m.MarcaID = p_MarcaID;
+   END //
+   DELIMITER ;
+
+2. Uso del procedimiento por el administrador
+   CALL ActualizarPreciosPorMarca(2, 15.00);
+
+
+   --CASO DE USO 7:
+1. Creación del procedimiento
+2. Uso del procedimiento por el administrador
+
+   --CASO DE USO 8:
+1. Creación del procedimiento
+2. Uso del procedimiento por el administrador
+
+   --CASO DE USO 9:
+1. Creación del procedimiento
+2. Uso del procedimiento por el administrador
+
+   --CASO DE USO 10:
+1. Creación del procedimiento
+2. Uso del procedimiento por el administrador
+
+   --CASO DE USO 11:
+1. Creación del procedimiento
+2. Uso del procedimiento por el administrador
+
+   --CASO DE USO 12:
+1. Creación del procedimiento
+2. Uso del procedimiento por el administrador

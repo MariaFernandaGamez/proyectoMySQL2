@@ -180,26 +180,23 @@ CALL CalcularIngresoTotalPorAño();
 -- CASO DE USO 6: CALCULAR EL NUMERO DE CLIENTES ACTIVOS EN UN MES
 
 1. Se define el procedimiento para calcular el numero de clientes activos en un mes 
+    DELIMITER //
+    CREATE PROCEDURE ContarClientesActivosEnMes(
+        IN p_mes INT,
+        IN p_año INT
+    )
+    BEGIN
+        SELECT
+            COUNT(DISTINCT Ventas.ClienteID) AS NumeroDeClientesActivos
+        FROM Ventas
+        WHERE MONTH(Ventas.Fecha) = p_mes
+        AND YEAR(Ventas.Fecha) = p_año;
+    END //
+    DELIMITER ;
 
-DELIMITER //
+2. Se llama el procedimiento    
+    CALL ContarClientesActivosEnMes();
 
-CREATE PROCEDURE ContarClientesActivosEnMes(
-    IN p_mes INT,
-    IN p_año INT
-)
-BEGIN
-    SELECT
-        COUNT(DISTINCT Ventas.ClienteID) AS NumeroDeClientesActivos
-    FROM Ventas
-    WHERE MONTH(Ventas.Fecha) = p_mes
-      AND YEAR(Ventas.Fecha) = p_año;
-END //
-
-DELIMITER ;
-
-2. Se llama el procedimiento 
-
-CALL ContarClientesActivosEnMes();
 
 --  CASO DE USO 7: CALCULAR EL PROMEDIO DE COMPRAS POR PROVEEDOR
 
