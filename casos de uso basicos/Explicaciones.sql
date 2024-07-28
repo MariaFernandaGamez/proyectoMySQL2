@@ -141,7 +141,7 @@ VALUES (@MiCompraID, 1, 10, 50.00),
 
    
 
-
+--CASOS DE USO CON JOIN
 
    -- CASO DE USO 11: CONSULTA DE VENTAS POR CIUDAD
    SELECT Ciudad,SUM(Ventas.Total) AS TotalVentas
@@ -177,5 +177,33 @@ VALUES (@MiCompraID, 1, 10, 50.00),
    ORDER BY v.Fecha ASC;
 
 
+--CASOS DE USO CON PROCEDIMIENTOS ALMACENADOS
+
+   --CASO DE USO 1: ACTUALIZACIÓN DE INVENTARIO DE BICILCETAS
+
+1. Creación del procedimiento
+   DELIMITER &&
+
+   CREATE PROCEDURE ActualizarInventarioBicicletas(
+      IN p_BicicletaID INT,
+      IN p_CantidadVendida INT
+   )
+   BEGIN
+      UPDATE Bicicletas
+      SET Stock = Stock - p_CantidadVendida
+      WHERE ID = p_BicicletaID;
+   END &&
+
+   DELIMITER ;
+
+2. Uso del procedimiento por el administrador
+   INSERT INTO Ventas (Fecha, ClienteID, Total) VALUES ('2024-07-26', 1, 1500.00);
+   SET @VentaID = LAST_INSERT_ID();
+   INSERT INTO DetallesVentas (VentaID, BicicletaID, Cantidad, PrecioUnitario) VALUES (@VentaID, 1, 3, 500.00);
+
+   CALL ActualizarInventarioBicicletas(1, 3);
+
+
+   --CASO DE USO 2: REGISTRO DE NUEVA VENTA
 
 
