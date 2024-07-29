@@ -1,15 +1,11 @@
-+---------+------------+
-|        EQUIPO        |               
-+---------+------------+
 | María Fernanda Gámez |
 | Juan Felipe Paredes  |
-+---------+------------+
 
-(images/Untitled.svg)
+![alt text](images/Untitled.svg)
 
-+---------+------------++---------+------------+
-|       CASOS DE USO PARA LA BASE DE DATOS     |               
-+---------+------------++---------+------------+
+
+| CASOS DE USO PARA LA BASE DE DATOS |               
+
 
 -- CASO DE USO 1: GESTIÓN DE INVENTARIO DE BICICLETAS
 
@@ -115,30 +111,26 @@
    DELETE FROM Repuestos
    WHERE ProveedorID = 1;
 
-   -- Insertar una nueva compra
-INSERT INTO Compras (Fecha, ProveedorID, Total)
-VALUES ('2024-07-26', 1, 500.00);
+   INSERT INTO Compras (Fecha, ProveedorID, Total)
+   VALUES ('2024-07-26', 1, 500.00);
 
--- Obtener el ID de la compra recién insertada
-SET @MiCompraID = LAST_INSERT_ID();
+   SET @MiCompraID = LAST_INSERT_ID();
 
--- Verificar que el ID se ha obtenido correctamente
-SELECT @MiCompraID;
+   SELECT @MiCompraID;
 
--- Insertar detalles de la compra utilizando el valor de la variable
-INSERT INTO DetallesCompras (CompraID, RepuestoID, Cantidad, PrecioUnitario)
-VALUES (@MiCompraID, 1, 10, 50.00),
-       (@MiCompraID, 2, 5, 30.00);
+   INSERT INTO DetallesCompras (CompraID, RepuestoID, Cantidad, PrecioUnitario)
+   VALUES (@MiCompraID, 1, 10, 50.00),
+         (@MiCompraID, 2, 5, 30.00);
    
 -- CASO DE USO 4: CONSULTA DE HISTORIAL POR CLIENTE
 
 1. El usuario selecciona el cliente del cual desea ver el historial
-SELECT ID, Fecha, ClienteID, Total
-FROM Ventas;
+   SELECT ID, Fecha, ClienteID, Total
+   FROM Ventas;
 
 2. El usuario selecciona una venta específica para ver los detalles.
-SELECT ID,VentaID,BicicletaID,Cantidad,PrecioUnitario
-FROM DetallesVentas;
+   SELECT ID,VentaID,BicicletaID,Cantidad,PrecioUnitario
+   FROM DetallesVentas;
 
 
 --CASO DE USO 5: GESTIÓN DE COMPRAS DE REPUESTOS
@@ -162,61 +154,64 @@ FROM DetallesVentas;
    SET Stock = Stock + 5
    WHERE ID = 2;  
 
+
 -- CASO DE USO 6: CONSULTA DE BICICLETAS MAS VENDIDAS POR MARCA 
 
 1. El sistema muestra una lista de marcas y el modelo de bicicleta más vendido para cada marca.
 
-SELECT
-    Marcas.Nombre AS Marca,Modelos.Nombre AS Modelo,SUM(DetallesVentas.Cantidad) AS TotalVendidas,Bicicletas.Precio AS PrecioUnitario,(SUM(DetallesVentas.Cantidad) * Bicicletas.Precio) AS TotalVentas
-FROM DetallesVentas
-    JOIN Bicicletas ON DetallesVentas.BicicletaID = Bicicletas.ID
-    JOIN Modelos ON Bicicletas.ModeloID = Modelos.ID
-    JOIN Marcas ON Modelos.MarcaID = Marcas.ID
-    GROUP BY Marcas.Nombre, Modelos.Nombre, Bicicletas.Precio
-ORDER BY TotalVendidas DESC;
+   SELECT
+      Marcas.Nombre AS Marca,Modelos.Nombre AS Modelo,SUM(DetallesVentas.Cantidad) AS TotalVendidas,Bicicletas.Precio AS PrecioUnitario,(SUM(DetallesVentas.Cantidad) * Bicicletas.Precio) AS TotalVentas
+   FROM DetallesVentas
+      JOIN Bicicletas ON DetallesVentas.BicicletaID = Bicicletas.ID
+      JOIN Modelos ON Bicicletas.ModeloID = Modelos.ID
+      JOIN Marcas ON Modelos.MarcaID = Marcas.ID
+      GROUP BY Marcas.Nombre, Modelos.Nombre, Bicicletas.Precio
+   ORDER BY TotalVendidas DESC;
+
 
 -- CASO DE USO 7: CLIENTES CON MAYOR GASTO EN UN AÑO ESPECIFICO
 
-SELECT
-    Clientes.Nombre AS Cliente,SUM(Ventas.Total) AS GastoTotal
-FROM Ventas
-    JOIN Clientes ON Ventas.ClienteID = Clientes.ID
-WHERE YEAR(Ventas.Fecha) = 2024
-GROUP BY Clientes.ID
-ORDER BY GastoTotal DESC;
+   SELECT
+      Clientes.Nombre AS Cliente,SUM(Ventas.Total) AS GastoTotal
+   FROM Ventas
+      JOIN Clientes ON Ventas.ClienteID = Clientes.ID
+   WHERE YEAR(Ventas.Fecha) = 2024
+   GROUP BY Clientes.ID
+   ORDER BY GastoTotal DESC;
+
 
 -- CASO DE USO 8: PROVEEDORES CON MAS COMPRAS EN EL ULTIMO MES
 
-SELECT
-    Proveedores.Nombre AS Proveedor,COUNT(Compras.ID) AS NumeroDeCompras,SUM(Compras.Total) AS TotalCompras
-FROM Compras
-    JOIN Proveedores ON Compras.ProveedorID = Proveedores.ID
-WHERE Compras.Fecha BETWEEN DATE_SUB(CURDATE(), INTERVAL 1 MONTH) AND CURDATE()
-GROUP BY Proveedores.ID
-ORDER BY NumeroDeCompras DESC;
+   SELECT
+      Proveedores.Nombre AS Proveedor,COUNT(Compras.ID) AS NumeroDeCompras,SUM(Compras.Total) AS TotalCompras
+   FROM Compras
+      JOIN Proveedores ON Compras.ProveedorID = Proveedores.ID
+   WHERE Compras.Fecha BETWEEN DATE_SUB(CURDATE(), INTERVAL 1 MONTH) AND CURDATE()
+   GROUP BY Proveedores.ID
+   ORDER BY NumeroDeCompras DESC;
 
--- CASO DE USO 9: REPUESTOS CON MENOR ROTACION EN EL INVENTARIO
+   -- CASO DE USO 9: REPUESTOS CON MENOR ROTACION EN EL INVENTARIO
 
-SELECT
-    Repuestos.Nombre AS Repuesto,Repuestos.Stock AS StockActual,COALESCE(SUM(DetallesCompras.Cantidad), 0) AS TotalComprado,
-    CASE
-        WHEN COALESCE(SUM(DetallesCompras.Cantidad), 0) = 0 THEN NULL
-        ELSE Repuestos.Stock / COALESCE(SUM(DetallesCompras.Cantidad), 1)
-    END AS RatioStockCompra
-FROM Repuestos
-LEFT JOIN DetallesCompras ON Repuestos.ID = DetallesCompras.RepuestoID
-GROUP BY Repuestos.ID
-ORDER BY RatioStockCompra DESC;
+   SELECT
+      Repuestos.Nombre AS Repuesto,Repuestos.Stock AS StockActual,COALESCE(SUM(DetallesCompras.Cantidad), 0) AS TotalComprado,
+      CASE
+         WHEN COALESCE(SUM(DetallesCompras.Cantidad), 0) = 0 THEN NULL
+         ELSE Repuestos.Stock / COALESCE(SUM(DetallesCompras.Cantidad), 1)
+      END AS RatioStockCompra
+   FROM Repuestos
+   LEFT JOIN DetallesCompras ON Repuestos.ID = DetallesCompras.RepuestoID
+   GROUP BY Repuestos.ID
+   ORDER BY RatioStockCompra DESC;
 
--- CASO DE USO 10: CIUDADES CON MAS VENTAS REALIZADAS
+   -- CASO DE USO 10: CIUDADES CON MAS VENTAS REALIZADAS
 
-SELECT
-    Ciudades.Nombre AS Ciudad,COUNT(Ventas.ID) AS NumeroDeVentas,SUM(Ventas.Total) AS TotalVentas
-FROM Ventas
-    JOIN Clientes ON Ventas.ClienteID = Clientes.ID
-    JOIN Ciudades ON Clientes.CiudadID = Ciudades.ID
-GROUP BY Ciudades.ID
-ORDER BY NumeroDeVentas DESC;   
+   SELECT
+      Ciudades.Nombre AS Ciudad,COUNT(Ventas.ID) AS NumeroDeVentas,SUM(Ventas.Total) AS TotalVentas
+   FROM Ventas
+      JOIN Clientes ON Ventas.ClienteID = Clientes.ID
+      JOIN Ciudades ON Clientes.CiudadID = Ciudades.ID
+   GROUP BY Ciudades.ID
+   ORDER BY NumeroDeVentas DESC;   
 
 
 
