@@ -1,14 +1,10 @@
-+---------+------------+
-|        EQUIPO        |               
-+---------+------------+
 | María Fernanda Gámez |
 | Juan Felipe Paredes  |
-+---------+------------+
-[text](dml.sql)
 
-+---------+------------++---------+------------+
-|       CASOS DE USO PARA LA BASE DE DATOS     |               
-+---------+------------++---------+------------+
+
+![alt text](images/Untitled.svg)
+
+|CASOS DE USO PARA LA BASE DE DATOS |  
 
     -- CASO DE USO 1: GESTIÓN DE INVENTARIO DE BICICLETAS
 
