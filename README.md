@@ -4,14 +4,13 @@
 | María Fernanda Gámez |
 | Juan Felipe Paredes  |
 +---------+------------+
-
-
+[text](dml.sql)
 
 +---------+------------++---------+------------+
 |       CASOS DE USO PARA LA BASE DE DATOS     |               
 +---------+------------++---------+------------+
 
--- CASO DE USO 1: GESTIÓN DE INVENTARIO DE BICICLETAS
+    -- CASO DE USO 1: GESTIÓN DE INVENTARIO DE BICICLETAS
 
 1. Insertar una nueva bicicleta
    INSERT INTO Bicicletas (ModeloID, Precio, Stock) 
@@ -79,6 +78,7 @@
    JOIN Carrito c ON b.ID = c.BicicletaID
    SET b.Stock = b.Stock - c.Cantidad;
 
+
    -- CASO DE USO 3: GESTIÓN DE PROVEEDORES Y REPUESTOS
 
 1. Agregar nuevo proveedor
@@ -115,20 +115,16 @@
    DELETE FROM Repuestos
    WHERE ProveedorID = 1;
 
-   -- Insertar una nueva compra
-INSERT INTO Compras (Fecha, ProveedorID, Total)
-VALUES ('2024-07-26', 1, 500.00);
+    INSERT INTO Compras (Fecha, ProveedorID, Total)
+    VALUES ('2024-07-26', 1, 500.00);
 
--- Obtener el ID de la compra recién insertada
-SET @MiCompraID = LAST_INSERT_ID();
+    SET @MiCompraID = LAST_INSERT_ID();
 
--- Verificar que el ID se ha obtenido correctamente
-SELECT @MiCompraID;
+    SELECT @MiCompraID;
 
--- Insertar detalles de la compra utilizando el valor de la variable
-INSERT INTO DetallesCompras (CompraID, RepuestoID, Cantidad, PrecioUnitario)
-VALUES (@MiCompraID, 1, 10, 50.00),
-       (@MiCompraID, 2, 5, 30.00);
+    INSERT INTO DetallesCompras (CompraID, RepuestoID, Cantidad, PrecioUnitario)
+    VALUES (@MiCompraID, 1, 10, 50.00),
+        (@MiCompraID, 2, 5, 30.00);
 
 
    --CASO DE USO 5: GESTIÓN DE COMPRAS DE REPUESTOS
@@ -162,7 +158,7 @@ VALUES (@MiCompraID, 1, 10, 50.00),
 
 
 
-   
+
 
 --CASOS DE USO CON JOIN
 
